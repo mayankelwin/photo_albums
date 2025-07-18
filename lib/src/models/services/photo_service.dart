@@ -1,8 +1,8 @@
-import '../api/api_client.dart';
+import '../api/api_services.dart';
 import '../core/photo_model.dart';
 
 class PhotoService {
-  final _client = ApiClient().dio;
+  final _client = ApiServices().dio;
 
   Future<List<Photo>> fetchPhotos() async {
     final response = await _client.get('/photos');
