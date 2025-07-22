@@ -6,16 +6,24 @@ import '../core/comment_model.dart';
 
 class ApiServices {
   final Dio dio = Dio(
-    BaseOptions(baseUrl: "https://jsonplaceholder.typicode.com"),
+    BaseOptions(
+      baseUrl: "https://jsonplaceholder.typicode.com",
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 5),
+    ),
   );
 
-  // Photos (limit 50)
+  // Limits
+  static const int photoLimit = 50;
+  static const int albumLimit = 50;
+  static const int commentLimit = 100;
+
+  // Photos
   Future<List<Photo>> fetchPhotos() async {
     try {
-      print('[API] Buscando fotos...');
       final response = await dio.get(
-        '/photos',
-        queryParameters: {'_limit': 50},
+        'https://jsonplaceholder.typicode.com/photos',
+        queryParameters: {'_limit': photoLimit},
       );
 
       final List data = response.data;
@@ -25,12 +33,12 @@ class ApiServices {
     }
   }
 
-  // Albums (limit 50)
+// Albums
   Future<List<Album>> fetchAlbums() async {
     try {
       final response = await dio.get(
-        '/albums',
-        queryParameters: {'_limit': 50},
+        'https://jsonplaceholder.typicode.com/albums',
+        queryParameters: {'_limit': albumLimit},
       );
 
       final List data = response.data;
@@ -43,7 +51,7 @@ class ApiServices {
   // Users
   Future<List<User>> fetchUsers() async {
     try {
-      final response = await dio.get('/users');
+      final response = await dio.get('https://jsonplaceholder.typicode.com/users');
 
       final List data = response.data;
       return data.map((e) => User.fromJson(e)).toList();
@@ -52,12 +60,12 @@ class ApiServices {
     }
   }
 
-  // Comments (limit 100)
+  // Comments
   Future<List<Comment>> fetchComments() async {
     try {
       final response = await dio.get(
-        '/comments',
-        queryParameters: {'_limit': 100},
+        'https://jsonplaceholder.typicode.com/comments',
+        queryParameters: {'_limit': commentLimit},
       );
 
       final List data = response.data;

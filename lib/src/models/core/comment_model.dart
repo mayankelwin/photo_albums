@@ -22,4 +22,14 @@ class Comment {
       postId: json['postId'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'body': body,
+      'postId': postId,
+    };
+  }
 }

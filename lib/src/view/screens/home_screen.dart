@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:photo_albums/src/view/widgets/photo_card_skeleton.dart';
 import 'package:signals/signals_flutter.dart';
 import '../../view_models/photo_view_model.dart';
 import '../widgets/photo_card.dart';
+import '../../models/core/album_model.dart';
 
 class HomeScreen extends StatefulWidget {
   final PhotoViewModel viewModel;
@@ -18,8 +20,15 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.viewModel.loadPhotos();
+      _loadData();
     });
+  }
+
+  Future<void> _loadData() async {
+    await Future.wait([
+      widget.viewModel.loadPhotos(),
+      widget.viewModel.loadAlbums(),
+    ]);
   }
 
   @override
@@ -27,7 +36,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final viewModel = widget.viewModel;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Photo Albums"), centerTitle: true),
+      appBar: AppBar(
+        title: const Text("Photo Albums"),
+        centerTitle: true,
+      ),
       body: Column(
         children: [
           Padding(
@@ -38,7 +50,11 @@ class _HomeScreenState extends State<HomeScreen> {
               onChanged: (value) => viewModel.searchQuery.value = value,
               decoration: InputDecoration(
                 hintText: "Filter by photo, album or author",
-                suffixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               ),
             ),
           ),
@@ -55,21 +71,39 @@ class _HomeScreenState extends State<HomeScreen> {
               }).toList();
 
               if (isLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return ListView.builder(
+                  itemCount: 6,
+                  itemBuilder: (context, index) => const PhotoCardSkeleton(),
+                );
               }
 
-              return ListView.builder(
-                itemCount: filteredPhotos.length,
-                itemBuilder: (context, index) {
-                  final photo = filteredPhotos[index];
-                  final album = viewModel.albums.value.firstWhere(
-                    (a) => a.id == photo.albumId,
-                    orElse: () => null,
-                  );
-                  final albumTitle = album?.title;
 
-                  return PhotoCard(photo: photo, albumTitle: albumTitle);
-                },
+              if (filteredPhotos.isEmpty) {
+                return const Center(child: Text("Nenhuma foto encontrada."));
+              }
+
+              return RefreshIndicator(
+                onRefresh: _loadData,
+                child: ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  itemCount: filteredPhotos.length,
+                  itemBuilder: (context, index) {
+                    final photo = filteredPhotos[index];
+
+                    Album? album;
+                    try {
+                      album = viewModel.albums.value.firstWhere(
+                              (a) => a.id == photo.albumId);
+                    } catch (_) {
+                      album = null;
+                    }
+
+                    final albumTitle = album?.title;
+
+                    return PhotoCard(photo: photo, albumTitle: albumTitle);
+                  },
+                ),
               );
             }),
           ),

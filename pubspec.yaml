@@ -1,5 +1,5 @@
 name: photo_albums
-description: "A new Flutter project."
+description: "Desafio A&3"
 
 publish_to: 'none' 
 version: 1.0.0+1
@@ -21,6 +21,7 @@ dependencies:
   path: ^1.8.3
   path_provider: ^2.1.2
   url_launcher: ^6.2.6
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
