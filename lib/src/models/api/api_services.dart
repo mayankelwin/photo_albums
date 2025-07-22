@@ -12,6 +12,7 @@ class ApiServices {
   // Photos (limit 50)
   Future<List<Photo>> fetchPhotos() async {
     try {
+      print('[API] Buscando fotos...');
       final response = await dio.get(
         '/photos',
         queryParameters: {'_limit': 50},

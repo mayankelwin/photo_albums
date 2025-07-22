@@ -1,31 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:signals/signals_flutter.dart';
 import '../../view_models/photo_view_model.dart';
 import '../widgets/photo_card.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final PhotoViewModel viewModel;
+
+  const HomeScreen({super.key, required this.viewModel});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final TextEditingController _searchController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
-    Provider.of<PhotoViewModel>(context, listen: false).loadPhotos();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.viewModel.loadPhotos();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = Provider.of<PhotoViewModel>(context);
-    final filteredPhotos = viewModel.photos.where((photo) {
-      final query = _searchController.text.toLowerCase();
-      return photo.title.toLowerCase().contains(query);
-    }).toList();
+    final viewModel = widget.viewModel;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Photo Albums"), centerTitle: true),
@@ -34,36 +33,45 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: TextField(
-              controller: _searchController,
+              autofocus: false,
+              textInputAction: TextInputAction.search,
+              onChanged: (value) => viewModel.searchQuery.value = value,
               decoration: InputDecoration(
                 hintText: "Filter by photo, album or author",
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    _searchController.clear();
-                    setState(() {});
-                  },
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                suffixIcon: const Icon(Icons.search),
               ),
-              onChanged: (value) {
-                setState(() {});
-              },
             ),
           ),
           Expanded(
-            child: viewModel.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    itemCount: filteredPhotos.length,
-                    itemBuilder: (context, index) {
-                      final photo = filteredPhotos[index];
-                      return PhotoCard(photo: photo);
-                    },
-                  ),
+            child: Watch((context) {
+              final isLoading = viewModel.isLoading.value;
+              final photos = viewModel.photos.value;
+              final searchQuery = viewModel.searchQuery.value;
+
+              final filteredPhotos = photos.where((photo) {
+                return photo.title.toLowerCase().contains(
+                  searchQuery.toLowerCase(),
+                );
+              }).toList();
+
+              if (isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              return ListView.builder(
+                itemCount: filteredPhotos.length,
+                itemBuilder: (context, index) {
+                  final photo = filteredPhotos[index];
+                  final album = viewModel.albums.value.firstWhere(
+                    (a) => a.id == photo.albumId,
+                    orElse: () => null,
+                  );
+                  final albumTitle = album?.title;
+
+                  return PhotoCard(photo: photo, albumTitle: albumTitle);
+                },
+              );
+            }),
           ),
         ],
       ),

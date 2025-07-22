@@ -16,6 +16,7 @@ dependencies:
   provider: ^6.1.2
   dio: ^5.4.0
   signals: ^6.0.2
+  signals_flutter: ^6.0.2
   sqflite: ^2.3.2
   path: ^1.8.3
   path_provider: ^2.1.2

@@ -1,26 +1,34 @@
-import 'package:flutter/material.dart';
+import 'package:signals/signals.dart';
 import '../models/core/photo_model.dart';
+import '../models/core/album_model.dart';
 import '../models/api/api_services.dart';
 
-class PhotoViewModel extends ChangeNotifier {
+class PhotoViewModel {
   final _service = ApiServices();
 
-  List<Photo> photos = [];
-  bool isLoading = false;
-  String? errorMessage;
+  final photos = signal<List<Photo>>([]);
+  final isLoading = signal(false);
+  final searchQuery = signal('');
+  final albums = signal<List<Album>>([]);
 
   Future<void> loadPhotos() async {
-    isLoading = true;
-    errorMessage = null;
-    notifyListeners();
-
+    isLoading.value = true;
     try {
-      photos = await _service.fetchPhotos();
+      final result = await _service.fetchPhotos();
+      photos.value = result;
     } catch (e) {
-      errorMessage = 'Erro ao carregar fotos: $e';
+      print('Erro ao carregar fotos: $e');
     } finally {
-      isLoading = false;
-      notifyListeners();
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> loadAlbums() async {
+    try {
+      final result = await _service.fetchAlbums();
+      albums.value = result;
+    } catch (e) {
+      print('Erro ao carregar álbuns: $e');
     }
   }
 }
