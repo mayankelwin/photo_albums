@@ -4,6 +4,7 @@ class Photo {
   final String url;
   final String thumbnailUrl;
   final int albumId;
+  final List<String>? allImages;
 
   Photo({
     required this.id,
@@ -11,6 +12,7 @@ class Photo {
     required this.url,
     required this.thumbnailUrl,
     required this.albumId,
+    this.allImages,
   });
 
   factory Photo.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,22 @@ class Photo {
       url: json['url'],
       thumbnailUrl: json['thumbnailUrl'],
       albumId: json['albumId'],
+    );
+  }
+
+  factory Photo.fromDummyJson({
+    required int id,
+    required String title,
+    required String url,
+    required String thumbnailUrl,
+    required int albumId,
+  }) {
+    return Photo(
+      id: id,
+      title: title,
+      url: url,
+      thumbnailUrl: thumbnailUrl,
+      albumId: albumId,
     );
   }
 }

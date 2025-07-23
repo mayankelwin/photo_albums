@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:photo_albums/src/view/screens/details_screen.dart';
 import 'package:photo_albums/src/view/widgets/photo_card_skeleton.dart';
 import 'package:signals/signals_flutter.dart';
 import '../../view_models/photo_view_model.dart';
@@ -101,7 +102,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     final albumTitle = album?.title;
 
-                    return PhotoCard(photo: photo, albumTitle: albumTitle);
+                    return PhotoCard(
+                      photo: photo,
+                      productPrice: "R\$ ${(photo.id * 3.5).toStringAsFixed(2)}",
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => DetailScreen(
+                              photo: photo,
+                              albumTitle: albumTitle,
+                            ),
+                          ),
+                        );
+                      },
+                    );
                   },
                 ),
               );

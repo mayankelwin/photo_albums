@@ -10,6 +10,7 @@ class PhotoDetailProvider with ChangeNotifier {
 
   User? user;
   List<Comment> comments = [];
+  List<Photo> photos = [];
   bool isLoading = true;
 
   PhotoDetailProvider(this.photo) {
@@ -20,13 +21,17 @@ class PhotoDetailProvider with ChangeNotifier {
     try {
       final users = await _api.fetchUsers();
       final allComments = await _api.fetchComments();
+      final allPhotos = await _api.fetchPhotos();
 
       user = users.firstWhere(
-            (u) => u.id == photo.albumId,
+        (u) => u.id == photo.albumId,
         orElse: () => users.first,
       );
 
       comments = allComments.where((c) => c.postId == photo.id).toList();
+
+      photos = allPhotos;
+
     } catch (e) {
       print("Erro ao carregar dados: $e");
     } finally {

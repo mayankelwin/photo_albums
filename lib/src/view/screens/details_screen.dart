@@ -4,17 +4,16 @@ import '../../models/core/photo_model.dart';
 import '../../providers/photo_detail_provider.dart';
 import '../widgets/photo_info_section.dart';
 import '../widgets/comment_list.dart';
-import '../widgets/comment_modal.dart';
 
 class DetailScreen extends StatelessWidget {
   final Photo photo;
   final String? albumTitle;
 
   const DetailScreen({
-    Key? key,
+    super.key,
     required this.photo,
     this.albumTitle,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

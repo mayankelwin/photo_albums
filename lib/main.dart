@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:signals_flutter/signals_flutter.dart';
 import 'src/view/screens/home_screen.dart';
 import 'src/view_models/photo_view_model.dart';
 

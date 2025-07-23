@@ -7,53 +7,93 @@ import '../core/comment_model.dart';
 class ApiServices {
   final Dio dio = Dio(
     BaseOptions(
-      baseUrl: "https://jsonplaceholder.typicode.com",
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 5),
+      baseUrl: "https://dummyjson.com",
     ),
   );
 
   // Limits
-  static const int photoLimit = 50;
   static const int albumLimit = 50;
-  static const int commentLimit = 100;
+  static const int userLimit = 30;     
+
+  // Albums
+    Future<List<Album>> fetchAlbums() async {
+      try {
+        final response = await dio.get(
+          '/products',
+          queryParameters: {'limit': albumLimit},
+        );
+
+        final List data = response.data['products'];
+
+        return data.map((product) {
+          final images = (product['images'] as List).cast<String>();
+
+          return Album(
+            id: product['id'],
+            title: product['title'],
+            photos: images
+                .map((imageUrl) => Photo(
+                      id: product['id'],
+                      albumId: product['id'],
+                      title: product['title'],
+                      url: imageUrl,
+                      thumbnailUrl: imageUrl,
+                    ))
+                .toList(),
+              );
+              }).toList();
+              } catch (e) {
+                throw Exception('Erro ao buscar álbuns: $e');
+            }
+          }
 
   // Photos
-  Future<List<Photo>> fetchPhotos() async {
-    try {
-      final response = await dio.get(
-        'https://jsonplaceholder.typicode.com/photos',
-        queryParameters: {'_limit': photoLimit},
-      );
+    Future<List<Photo>> fetchPhotos() async {
+      try {
+        final response = await dio.get(
+          '/products',
+          queryParameters: {'limit': albumLimit},
+        );
 
-      final List data = response.data;
-      return data.map((e) => Photo.fromJson(e)).toList();
-    } catch (e) {
-      throw Exception('Erro ao buscar fotos: $e');
+        final List data = response.data['products'];
+
+        final photos = <Photo>[];
+
+        for (var product in data) {
+          final images = (product['images'] as List).cast<String>();
+          final productId = product['id'] as int;
+          final productTitle = product['title'] as String;
+
+          if (images.isNotEmpty) {
+            photos.add(
+              Photo(
+                id: productId,
+                albumId: productId,
+                title: productTitle,
+                url: images[0],
+                thumbnailUrl: images[0],
+                allImages: images,
+              ),
+            );
+          }
+        }
+
+        return photos;
+      } catch (e) {
+        throw Exception('Erro ao buscar fotos: $e');
+      }
     }
-  }
 
-// Albums
-  Future<List<Album>> fetchAlbums() async {
-    try {
-      final response = await dio.get(
-        'https://jsonplaceholder.typicode.com/albums',
-        queryParameters: {'_limit': albumLimit},
-      );
 
-      final List data = response.data;
-      return data.map((e) => Album.fromJson(e)).toList();
-    } catch (e) {
-      throw Exception('Erro ao buscar álbuns: $e');
-    }
-  }
-
-  // Users
+  // Users (autores)
   Future<List<User>> fetchUsers() async {
     try {
-      final response = await dio.get('https://jsonplaceholder.typicode.com/users');
+      final response = await dio.get(
+        '/users',
+        queryParameters: {'limit': userLimit},
+      );
 
-      final List data = response.data;
+      final List data = response.data['users'];
       return data.map((e) => User.fromJson(e)).toList();
     } catch (e) {
       throw Exception('Erro ao buscar usuários: $e');
@@ -64,11 +104,10 @@ class ApiServices {
   Future<List<Comment>> fetchComments() async {
     try {
       final response = await dio.get(
-        'https://jsonplaceholder.typicode.com/comments',
-        queryParameters: {'_limit': commentLimit},
+        '/comments',
       );
 
-      final List data = response.data;
+      final List data = response.data['comments'];
       return data.map((e) => Comment.fromJson(e)).toList();
     } catch (e) {
       throw Exception('Erro ao buscar comentários: $e');
