@@ -46,16 +46,6 @@ lib/
 
 ---
 
-## 📸 Imagens do App
-
-| Tela Inicial | Detalhes da Foto | Comentários |
-|--------------|------------------|-------------|
-| ![home](assets/screenshots/home.png) | ![detail](assets/screenshots/detail.png) | ![comments](assets/screenshots/comments.png) |
-
-*(adicione suas capturas de tela em `assets/screenshots/`)*
-
----
-
 ## 🛠 Como Rodar Localmente
 
 ### Pré-requisitos
