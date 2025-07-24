@@ -7,10 +7,10 @@ class Company {
     required this.catchPhrase,
   });
 
-  factory Company.fromJson(Map<String, dynamic> json) {
+  factory Company.fromJson(Map<String, dynamic>? json) {
     return Company(
-      name: json['name'],
-      catchPhrase: json['catchPhrase'],
+      name: json?['name'] ?? 'Sem nome',
+      catchPhrase: json?['catchPhrase'] ?? '',
     );
   }
 }
@@ -32,10 +32,10 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
-      name: json['name'],
-      username: json['username'],
-      email: json['email'],
+      id: json['id'] ?? 0,
+      name: json['name'] ?? 'Sem nome',
+      username: json['username'] ?? '',
+      email: json['email'] ?? 'sem@email.com',
       company: Company.fromJson(json['company']),
     );
   }

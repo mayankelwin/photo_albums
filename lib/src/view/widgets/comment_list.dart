@@ -8,6 +8,7 @@ class CommentList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<PhotoDetailProvider>(context);
+    final theme = Theme.of(context);
 
     print('Comentários carregados: ${provider.comments.length}');
 
@@ -16,17 +17,49 @@ class CommentList extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Comentários", style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
+          Text(
+            "Comentários",
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 12),
           if (provider.comments.isEmpty)
             Text('Nenhum comentário disponível'),
-          ...provider.comments.map((comment) => Card(
-            child: ListTile(
-              title: Text(comment.name),
-              subtitle: Text(comment.body),
-              trailing: Text(comment.email),
+          ...provider.comments.map(
+            (comment) => Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  )
+                ],
+              ),
+              child: ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                title: Text(
+                  comment.name,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: Text(comment.body),
+                ),
+                trailing: Text(
+                  comment.email,
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                ),
+              ),
             ),
-          )),
+          ),
         ],
       ),
     );

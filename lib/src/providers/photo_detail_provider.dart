@@ -17,28 +17,25 @@ class PhotoDetailProvider with ChangeNotifier {
     loadDetails();
   }
 
-  Future<void> loadDetails() async {
-    try {
-      final users = await _api.fetchUsers();
-      final allComments = await _api.fetchComments();
-      final allPhotos = await _api.fetchPhotos();
+Future<void> loadDetails() async {
+  try {
+    final users = await _api.fetchUsers();
+    final allComments = await _api.fetchComments();
+    final allPhotos = await _api.fetchPhotos();
 
-      user = users.firstWhere(
-        (u) => u.id == photo.albumId,
-        orElse: () => users.first,
-      );
+    final userIndex = photo.id % users.length;
+    user = users[userIndex];
 
-      comments = allComments.where((c) => c.postId == photo.id).toList();
+    comments = allComments.where((c) => c.postId == photo.id).toList();
+    photos = allPhotos;
 
-      photos = allPhotos;
-
-    } catch (e) {
-      print("Erro ao carregar dados: $e");
-    } finally {
-      isLoading = false;
-      notifyListeners();
-    }
+  } catch (e) {
+    print("Erro ao carregar dados: $e");
+  } finally {
+    isLoading = false;
+    notifyListeners();
   }
+}
 
   void addComment(Comment comment) {
     comments.insert(0, comment);
