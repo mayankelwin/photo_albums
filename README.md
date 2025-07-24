@@ -80,15 +80,6 @@ flutter run
 
 ---
 
-## 📌 TODO
-
-- [ ] Paginação das fotos
-- [ ] Favoritar fotos localmente
-- [ ] Armazenamento offline (com Hive)
-- [ ] Suporte a modo escuro
-
----
-
 ## 👨‍💻 Autor
 
 Desenvolvido por [**Mayan Kelwin**](https://github.com/mayankelwin)  
